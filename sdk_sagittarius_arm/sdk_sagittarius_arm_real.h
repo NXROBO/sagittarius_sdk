@@ -68,8 +68,8 @@ namespace sdk_sagittarius_arm
         bool SetServoTorque(int arm_torque[]);
 
     public:
-        static double lower_joint_limits[6];
-        static double upper_joint_limits[6];
+        float lower_joint_limits[6];
+        float upper_joint_limits[6];
 
     private:
         bool torque_status;
@@ -101,6 +101,10 @@ namespace sdk_sagittarius_arm
             /// @param eomg - 姿态的精度
             /// @param ev - 位置的精度
             bool getIKinTheta(float x, float y, float z, float roll, float pitch, float yaw, float theta_result[], double eomg = 0.001, double ev = 0.001);
+
+        public:
+            float lower_joint_limits[6];
+            float upper_joint_limits[6];
 
         private:
             Eigen::MatrixXd Slist;
