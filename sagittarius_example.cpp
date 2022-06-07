@@ -4,6 +4,7 @@
  * All rights reserved.
  * Author: litian.zhuang  <litian.zhuang@nxrobo.com>   
  */
+#include <iostream>
 #include <sdk_sagittarius_arm/sdk_sagittarius_arm_real.h>
 #include <sdk_sagittarius_arm/sdk_sagittarius_arm_log.h>
 #include <sdk_sagittarius_arm/modern_robotics.h>
@@ -25,11 +26,9 @@ int main(int argc, char** argv)
     sdk_sagittarius_arm::SagittariusArmReal sar("/dev/ttyACM0", 1000000, 500, 5);
 
     // 初始化机械臂 IK 运算器
-    // 参数1：0.06 为末端在 x 轴上的偏移
-    // 参数2：0 为末端在 Y 轴上的偏移
-    // 参数3：0 为末端在 Z 轴上的偏移
-    // 参数全 0 时末端在 7 号舵机的舵盘上
-    sdk_sagittarius_arm::SagittariusArmIKinSpace ik(0.06, 0, 0);
+    // 机械臂默认的效应器在 7 号舵机的舵盘中心。
+    // 参数x、y、z 作用是对效应器进行偏移，之后的运算都使用偏移后的效应器
+    sdk_sagittarius_arm::SagittariusArmKinematics sgr_kinematics(0, 0, 0);
 
     // sar.SetServoTorque(torque); // 扭力设置
     log_print(LOG_TYPE_INFO, "Sagittarius driver is running\n"); // 输出常规信息
@@ -48,14 +47,15 @@ int main(int argc, char** argv)
         joint_positions[6] = 0;
         sar.SetAllServoRadian(joint_positions);         //设置6个舵机的弧度
         sleep(1);
+
         joint_positions[5] = 0;
         joint_positions[6] = 0;
         sar.SetAllServoRadian(joint_positions);         //设置6个舵机的弧度
         sleep(1);
         servo_pose[0].id=1;
-        servo_pose[0].value = 0.55;
+        servo_pose[0].value = 0.45;
         servo_pose[1].id=2;
-        servo_pose[1].value = 0.55;
+        servo_pose[1].value = 0.45;
         servo_pose[2].id=3;
         servo_pose[2].value = 0.55;    
         servo_pose[3].id=4;
@@ -65,30 +65,46 @@ int main(int argc, char** argv)
         sar.arm_set_gripper_linear_position(-0.068);    //设置夹爪的角度
         sleep(5);
 
-        if(ik.getIKinTheta(0.3, 0, 0.0, 0, 0, 0, joint_positions)) // 获取末端在目标点上时每个舵机的角度
+        // 获取末端在目标点上时每个舵机的角度，使用XYZ位置与欧拉角姿态
+        if(sgr_kinematics.getIKinThetaEuler(0.3, 0, 0.0, 0, 0, 0, joint_positions))
         {
             // 这个位置 IK 运算器能找到结果，但角度在舵机运行范围外，所以结果不执行，并打印错误信息
-            sar.SetAllServoRadian(joint_positions);         //设置6个舵机的弧度
+            sar.SetAllServoRadian(joint_positions);                 //设置6个舵机的弧度
             sleep(5);
         }
-        if(ik.getIKinTheta(0.3, 0, 0.1, 0, 90, 0, joint_positions)) // 获取末端在目标点上时每个舵机的角度
+
+        // 获取末端在目标点上时每个舵机的角度，使用XYZ位置与欧拉角姿态
+        if(sgr_kinematics.getIKinThetaEuler(0.3, 0, 0.1, 0, 45, 0, joint_positions)) 
         {
-            sar.SetAllServoRadian(joint_positions);         //设置6个舵机的弧度
+            sar.SetAllServoRadian(joint_positions);                 //设置6个舵机的弧度
+            sleep(5);
+            
+            float xyz[3] = {0}, euler[3] = {0};
+            log_print(LOG_TYPE_INFO, "current XYZ and Euler:\n");
+            sar.GetCurrentJointStatus(js);                          // 获取当前角度
+            sgr_kinematics.getFKinEuler(js, xyz, euler);            // 对 js 进行正向运动学，返回位置和欧拉角姿态
+            log_print(LOG_TYPE_INFO, "x=%.4f y=%.4f z=%.4f roll=%.4f pitch=%.4f yaw=%.4f\n", xyz[0], xyz[1], xyz[2], euler[0], euler[1], euler[2]);
+            sleep(2);
+        }
+
+        // 获取末端在目标点上时每个舵机的角度，使用XYZ位置与四元数姿态(roll=0, pitch=0.785rad, yaw=0)
+        if(sgr_kinematics.getIKinThetaQuaternion(0.3, 0, 0.1, 0, 0.7068252, 0, 0.7073883, joint_positions))
+        {
+            sar.SetAllServoRadian(joint_positions);                 //设置6个舵机的弧度
             sleep(5);
         }
-        if(ik.getIKinTheta(0.3, 0, 0.1, 0, 45, 0, joint_positions)) // 获取末端在目标点上时每个舵机的角度
+
+        // 获取末端在目标点上时每个舵机的角度，使用XYZ位置与欧拉角姿态
+        if(sgr_kinematics.getIKinThetaEuler(0.2, 0.2, 0.2, 0, 0, 45, joint_positions))
         {
-            sar.SetAllServoRadian(joint_positions);         //设置6个舵机的弧度
+            sar.SetAllServoRadian(joint_positions);                 //设置6个舵机的弧度
             sleep(5);
         }
-        if(ik.getIKinTheta(0.2, 0.2, 0.2, 0, 0, 45, joint_positions)) // 获取末端在目标点上时每个舵机的角度
+
+        // 获取末端在目标点上时每个舵机的角度，使用XYZ位置与欧拉角姿态
+        if(sgr_kinematics.getIKinThetaEuler(0.3, 0, 0.3, 0, 0, 0, joint_positions))
         {
-            sar.SetAllServoRadian(joint_positions);         //设置6个舵机的弧度
-            sleep(5);
-        }
-        if(ik.getIKinTheta(0.3, 0, 0.3, 0, 0, 0, joint_positions)) // 获取末端在目标点上时每个舵机的角度
-        {
-            sar.SetAllServoRadian(joint_positions);         //设置6个舵机的弧度
+            sar.SetAllServoRadian(joint_positions);                 //设置6个舵机的弧度
             sleep(5);
         }
 

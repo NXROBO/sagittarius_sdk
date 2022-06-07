@@ -1,8 +1,8 @@
 /*
- * @Descripttion: ÈÕÖ¾
+ * @Descripttion: æ—¥å¿—
  * @version: 1.00
  * @Author: ShuDong.Hong@nxrobo.com
- * @Company: NXROBO (ÉîÛÚ´´ÏëÎ´À´»úÆ÷ÈËÓÐÏÞ¹«Ë¾)
+ * @Company: NXROBO (æ·±åœ³åˆ›æƒ³æœªæ¥æœºå™¨äººæœ‰é™å…¬å¸)
  * @Date: 2022-03-29 11:10:52
  * @LastEditors: ShuDong.Hong@nxrobo.com
  * @LastEditTime: 2022-03-30 11:49:33
@@ -12,19 +12,19 @@
 #include <sdk_sagittarius_arm/sdk_sagittarius_arm_constants.h>
 
 
-// ÈÕÖ¾ÐÅÏ¢µÄ¼¶±ð
-#define LOG_TYPE_DEBUG 4 // µ÷ÊÔÐÅÏ¢, ÓÃÓÚµ÷ÊÔ
-#define LOG_TYPE_INFO 3  // ³£¹æÐÅÏ¢
-#define LOG_TYPE_WARN 2  // Ò»°ã¾¯¸æ, ¿É¼ÌÐøÖ´ÐÐµ«ÎÞ·¨±£Ö¤ÄÜÕý³£¹¤×÷
-#define LOG_TYPE_ERROR 1 // ÑÏÖØ´íÎó, ÎÞ·¨¼ÌÐøÖ´ÐÐ
+// æ—¥å¿—ä¿¡æ¯çš„çº§åˆ«
+#define LOG_TYPE_DEBUG 4 // è°ƒè¯•ä¿¡æ¯, ç”¨äºŽè°ƒè¯•
+#define LOG_TYPE_INFO 3  // å¸¸è§„ä¿¡æ¯
+#define LOG_TYPE_WARN 2  // ä¸€èˆ¬è­¦å‘Š, å¯ç»§ç»­æ‰§è¡Œä½†æ— æ³•ä¿è¯èƒ½æ­£å¸¸å·¥ä½œ
+#define LOG_TYPE_ERROR 1 // ä¸¥é‡é”™è¯¯, æ— æ³•ç»§ç»­æ‰§è¡Œ
 
-/// @brief log_print Êä³öÖ¸¶¨¼¶±ðµÄÈÕÖ¾£¬µÚÒ»¸ö²ÎÊýÊ±ÈÕÖ¾¼¶±ð±êÇ©£¬ºóÃæ²ÎÊýÊ¹ÓÃÓë printf Ò»ÖÂ
-/// @param level - ÈÕÖ¾¼¶±ð±êÇ©£¬·Ö±ðÊÇ LOG_TYPE_ERROR¡¢LOG_TYPE_WARN¡¢LOG_TYPE_INFO¡¢LOG_TYPE_DEBUG
-/// @param log_format, ... - Êä³ö×Ö·û´®¸ñÊ½Óë²ÎÊý£¬Ê¹ÓÃ·½·¨Óë printf Ò»ÖÂ
+/// @brief log_print è¾“å‡ºæŒ‡å®šçº§åˆ«çš„æ—¥å¿—ï¼Œç¬¬ä¸€ä¸ªå‚æ•°æ—¶æ—¥å¿—çº§åˆ«æ ‡ç­¾ï¼ŒåŽé¢å‚æ•°ä½¿ç”¨ä¸Ž printf ä¸€è‡´
+/// @param level - æ—¥å¿—çº§åˆ«æ ‡ç­¾ï¼Œåˆ†åˆ«æ˜¯ LOG_TYPE_ERRORã€LOG_TYPE_WARNã€LOG_TYPE_INFOã€LOG_TYPE_DEBUG
+/// @param log_format, ... - è¾“å‡ºå­—ç¬¦ä¸²æ ¼å¼ä¸Žå‚æ•°ï¼Œä½¿ç”¨æ–¹æ³•ä¸Ž printf ä¸€è‡´
 void log_print(int level, char const *log_format, ...);
 
-/// @brief log_set_level ÉèÖÃÊä³öÈÕÖ¾µÄ¼¶±ð
-/// @param level - ÈÕÖ¾¼¶±ð±êÇ©, 4: ERROR, WARNNING, INFO, DEBUG
+/// @brief log_set_level è®¾ç½®è¾“å‡ºæ—¥å¿—çš„çº§åˆ«
+/// @param level - æ—¥å¿—çº§åˆ«æ ‡ç­¾, 4: ERROR, WARNNING, INFO, DEBUG
 ///                             3: ERROR, WARNNING, INFO
 ///                             2: ERROR, WARNNING
 ///                             1: ERROR

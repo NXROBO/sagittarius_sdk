@@ -80,17 +80,24 @@ namespace sdk_sagittarius_arm
         short arm_calculate_gripper_degree_position(const float dist);
 
     };
-    class SagittariusArmIKinSpace
+    class SagittariusArmKinematics
     {
         public:
-            /// @brief SagittariusArmIKinSpace 初始化类
+            /// @brief SagittariusArmKinematics 初始化类
             /// @param x - float 末端在 x 轴的偏移, 单位为米
             /// @param y - float 末端在 y 轴的偏移, 单位为米
             /// @param z - float 末端在 z 轴的偏移, 单位为米
-            SagittariusArmIKinSpace(float x = 0, float y = 0, float z = 0);
-            virtual ~SagittariusArmIKinSpace();
+            SagittariusArmKinematics(float x = 0, float y = 0, float z = 0);
+            virtual ~SagittariusArmKinematics();
 
-            /// @brief getIKinTheta 给定末端姿势，运算出机械臂各个关节的角度
+            /// @brief getIKinThetaMatrix 给定末端位姿的矩阵，运算出机械臂各个关节的角度
+            /// @param M - 末端在世界坐标上表达的矩阵
+            /// @param theta_result「」- 运算出关节的解会存储在这个数组中
+            /// @param eomg - 姿态的精度
+            /// @param ev - 位置的精度
+            bool getIKinThetaMatrix(const Eigen::MatrixXd& M_EE, float theta_result[], double eomg = 0.001, double ev = 0.001);
+
+            /// @brief getIKinThetaEuler 给定末端位置和以欧拉角(静态RPY)表达的姿态，运算出机械臂各个关节的角度
             /// @param x - 末端在 x 轴上的值
             /// @param y - 末端在 y 轴上的值
             /// @param z - 末端在 z 轴上的值
@@ -100,7 +107,37 @@ namespace sdk_sagittarius_arm
             /// @param theta_result「」- 运算出关节的解会存储在这个数组中
             /// @param eomg - 姿态的精度
             /// @param ev - 位置的精度
-            bool getIKinTheta(float x, float y, float z, float roll, float pitch, float yaw, float theta_result[], double eomg = 0.001, double ev = 0.001);
+            bool getIKinThetaEuler(float x, float y, float z, float roll, float pitch, float yaw, float theta_result[], double eomg = 0.001, double ev = 0.001);
+
+            /// @brief getIKinThetaQuaternion 给定末端位置和以四元数表达的姿态，运算出机械臂各个关节的角度
+            /// @param x - 末端在 x 轴上的值
+            /// @param y - 末端在 y 轴上的值
+            /// @param z - 末端在 z 轴上的值
+            /// @param ox - 末端四元数的 x 值
+            /// @param oy - 末端四元数的 y 值
+            /// @param oz - 末端四元数的 z 值
+            /// @param ow - 末端四元数的 w 值
+            /// @param theta_result「」- 运算出关节的解会存储在这个数组中
+            /// @param eomg - 姿态的精度
+            /// @param ev - 位置的精度
+            bool getIKinThetaQuaternion(float x, float y, float z, float ox, float oy, float oz, float ow, float theta_result[], double eomg = 0.001, double ev = 0.001);
+
+            /// @brief getFKinMatrix 给定6个关节的角度，运算出机械臂末端的矩阵
+            /// @param theta「」 - 6个关节的角度
+            /// @param M - 运算出的矩阵会存储在这个对象中
+            bool getFKinMatrix(float theta[], Eigen::MatrixXd& M_EE);
+
+            /// @brief getFKinMatrix 给定6个关节的角度，运算出机械臂末端的位置与欧拉角
+            /// @param theta「」 - 6个关节的角度
+            /// @param xyz - 运算出的位置会存储在这个对象中
+            /// @param euler - 运算出的姿态会存储在这个对象中
+            bool getFKinEuler(float theta[], float xyz[], float euler[]);
+
+            /// @brief getFKinMatrix 给定6个关节的角度，运算出机械臂末端的位置与四元数
+            /// @param theta「」 - 6个关节的角度
+            /// @param xyz - 运算出的位置会存储在这个对象中
+            /// @param quaternion - 运算出的姿态会存储在这个对象中
+            bool getFKinQuaternion(float theta[], float xyz[], float quaternion[]);
 
         public:
             float lower_joint_limits[6];

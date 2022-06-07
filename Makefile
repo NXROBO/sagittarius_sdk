@@ -15,6 +15,9 @@ sagittarius_example :
 
 	$(CC) -lpthread -o sagittarius_example sagittarius_example.cpp  $(LIBS)
 
+#sagittarius_example_use_matrix :
+#	$(CC) -lpthread -o sagittarius_example_use_matrix sagittarius_example_use_matrix.cpp  $(LIBS)
+
 clean:
 	-$(RM) -f sagittarius_example
 	-$(RM) -f *.o
