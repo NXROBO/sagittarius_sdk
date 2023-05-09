@@ -19,6 +19,15 @@ typedef struct
     unsigned char id;
     float value;                                                  // 舵机ID。未启用
 }ServoStruct;
+typedef struct 
+{
+    uint8_t flag;                                                         // 控制位。
+    uint8_t servo_id;                                                     // 舵机ID。
+    int16_t speed;                                                       // 实时速度
+    int16_t payload;                                                      // 实时负载
+    uint8_t voltage;                                                     // 实时电压
+    uint16_t current;                                                     // 实时电流
+}Str_ServoState;
 namespace sdk_sagittarius_arm
 {
     class CSDarmCommon
@@ -33,6 +42,7 @@ namespace sdk_sagittarius_arm
         void PublishJointStates(unsigned char *buf);
         virtual bool RebootDevice();
         float joint_status[7];
+        Str_ServoState servo_state;
         /*发送控制所有舵机的角度*/
         /**
                              * \param [in]  (v1, v2, v3, v4, v5, v6) v1~v6：1~6号舵机的弧度
@@ -47,6 +57,7 @@ namespace sdk_sagittarius_arm
         virtual int SetArmVel(unsigned short vel)=0;
         virtual int SetArmAcc(unsigned char acc)=0;
         virtual int SetArmTorque(int torque[])=0;
+        virtual int SendGetServoRealTimeInfo(unsigned char id)=0;
         virtual int SendSerialData2Arm(char *buf, int length)=0;
         /*发送舵机的锁与释放命令到机械臂*/
         /**

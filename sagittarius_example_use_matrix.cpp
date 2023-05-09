@@ -15,6 +15,7 @@ int main(int argc, char** argv)
     float joint_positions[7] = {0};
     int torque[7] = {300, 300, 300, 300, 300, 300, 300}; // 舵机扭矩的值，下标0~6对应舵机编号1~7
     ServoStruct servo_pose[7];
+    int16_t servo_info_arr[4] = {0};
 
     log_set_level(3); // 设置日志级别为 3，如果不调用设置时，级别默认为 3
 
@@ -29,6 +30,10 @@ int main(int argc, char** argv)
     // 机械臂默认的效应器在 7 号舵机的舵盘中心。
     // 参数x、y、z 作用是对效应器进行偏移，之后的运算都使用偏移后的效应器
     sdk_sagittarius_arm::SagittariusArmKinematics sgr_kinematics(0, 0, 0);
+
+    // 销毁 SagittariusArmReal 对象时不释放机械臂的舵机
+    // 如果不调用这个接口设置，初始化对象时默认设置为不释放
+    sar.SetFreeAfterDestructor(false);
 
     // sar.SetServoTorque(torque); // 扭力设置
     log_print(LOG_TYPE_INFO, "Sagittarius driver is running\n"); // 输出常规信息
@@ -70,8 +75,15 @@ int main(int argc, char** argv)
             std::cout << T_EE << std::endl;
             sleep(2);
         }
+
+        if(sar.GetServoInfo(2, servo_info_arr, 200))    // 获取2号舵机当前状态
+        {
+            log_print(LOG_TYPE_INFO, 
+                "servo No.2 real time info: speed=%d, payload=%d%%, voltage=%dV, current=%dmA\n", 
+                servo_info_arr[0], servo_info_arr[1], servo_info_arr[2], servo_info_arr[3]);
+        }
     }
-    return 0;
+    exit(0);
 }
 
 

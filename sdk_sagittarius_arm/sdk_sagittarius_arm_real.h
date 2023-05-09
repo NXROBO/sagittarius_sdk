@@ -24,6 +24,10 @@ namespace sdk_sagittarius_arm
         SagittariusArmReal(std::string strSerialName, int Baudrate, int vel, int acc);
         virtual ~SagittariusArmReal();
 
+        /// @brief SetFreeAfterDestructor 设置对象销毁时是否释放舵机
+        /// @param value - true为释放, false为不释放
+        void SetFreeAfterDestructor(bool value);
+
         /// @brief CheckUpperLower 检测输入的角度是否在允许的范围内
         /// @param js「」 - js[0]～js[5]对应1～6号舵机的弧度值。请一次性按顺序传入6个舵机值
         bool CheckUpperLower(float js[]);
@@ -55,6 +59,12 @@ namespace sdk_sagittarius_arm
         /// @param msg - 字符串，"free" 或者 "lock"
         void ControlTorque(std::string msg);
 
+        /// @brief GetServoInfo 获取指定舵机的实时状态
+        /// @param id - 指定舵机的舵机号
+        /// @param info_arr - 2字节整型的数组，成功获取实时状态后，[速度(50step/s), 占空比(%), 电压(V), 电流(mA)]共4个状态会按顺序保存这个数组中
+        /// @param timeout_ms - 读取超时的时间，超过时间就返回读取失败，单位是ms，建议设置值大于100ms，默认500ms
+        bool GetServoInfo(unsigned char id, int16_t info_arr[], int timeout_ms=500);
+
         /// @brief SetServoAcceleration 设置所有舵机的加速度
         /// @param arm_acc - 对应舵机的加速度0～254。建议设置在10以内        
         bool SetServoAcceleration(int arm_acc);
@@ -73,6 +83,7 @@ namespace sdk_sagittarius_arm
 
     private:
         bool torque_status;
+        bool free_after_destructor;
         sdk_sagittarius_arm::CSDarmCommon *pSDKarm;
         float angle[JOINT_NUM];
         /// @brief arm_calculate_gripper_degree_position 距离转换成角度
